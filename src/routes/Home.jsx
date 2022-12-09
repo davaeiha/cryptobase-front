@@ -1,12 +1,11 @@
-import React from "react";
+import React,{useState} from "react";
 import CoinSearch from "../components/CoinSearch";
-import Trending from "../components/Trending";
+import ReactPaginate from 'react-paginate';
 
-const Home = ({coins}) => {
+const Home = ({symboles}) => {
     return (
         <div>
-            <CoinSearch coins={coins}/>
-            <Trending />
+            <CoinSearch symboles={symboles}/>
         </div>
     );
 }

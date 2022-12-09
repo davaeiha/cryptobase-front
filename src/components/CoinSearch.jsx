@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import CoinItem from "./CoinItem";
 
-const CoinSearch = ({coins}) => {
+const CoinSearch = ({symboles}) => {
+
     const [searchText,setSearchText] = useState('');
     return (
         <div className="rounded-div">
@@ -19,28 +20,28 @@ const CoinSearch = ({coins}) => {
             <table className=" w-full border-collapse text-center">
                 <thead>
                     <tr className=" border-b">
-                        <th></th>
                         <th className=" px-4">#</th>
-                        <th className=" text-left">Coin</th>
-                        <th></th>
-                        <th>Price</th>
-                        <th>24h</th>
-                        <th className=" hidden md:table-cell">24h volume</th>
-                        <th className=" hidden md:table-cell">Mkt</th>
-                        <th>last 7 years</th>
+                        <th className=" text-left">Symbol</th>
+                        <th>Open Price</th>
+                        <th>High Price</th>
+                        <th>Low Price</th>
+                        <th>Quote base Volume</th>
+                        <th>Quote Asset Volume</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        coins.filter((value)=>{
+                        Object.keys(symboles)
+                        .filter((value)=>{
+                            console.log(value,searchText)
                             if (searchText === '') {
                                 return value;
-                            }else if ( value.name.toLowerCase().incluedes(searchText.toLowerCase())){
+                            }else if ( value.toLowerCase().includes(searchText.toLowerCase())){
                                 return value;
                             }
-                        }).map((coin)=> (
-                            <CoinItem key={coin.id} coin={coin} />
-                        ))
+                        })
+                        .map((symbole,index)=>(<CoinItem key={index} symboleData={symboles[symbole]} />))
+        
                     }
                 </tbody>
             </table>

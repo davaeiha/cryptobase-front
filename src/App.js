@@ -2,36 +2,38 @@ import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/navbar";
 import { ThemeProvider } from "./context/ThemeContext";
-import Account from "./routes/Account";
 import Home from "./routes/Home";
 import SignIn from "./routes/Signin";
 import SignUp from "./routes/Signup";
-import axios from "axios";
-import CoinPage from "./routes/CoinPage";
 import Footer from "./components/Footer";
+import { io } from "socket.io-client";
 
 function App() {
-  const [coins, setCoins] = useState([]);
 
-  const url =
-    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true";
+  const [symboles,setSymboles] = useState({})
+ 
+  React.useEffect(()=>{
+    const socket = io('http://localhost:5000')
+    socket.on('connect', ()=>console.log(socket.id))
+    socket.on('connect_error', ()=>{
+      setTimeout(()=>socket.connect(),5000)
+    })
+    socket.on('tickers', (data)=>{
+      const dic = data?.reduce((initialTicker,ticker)=>({...initialTicker,[ticker.symbol]:ticker}),{})
+      setSymboles((oldDic)=>({...oldDic,...dic}))
+      
+    })
+   socket.on('disconnect',()=>console.log('server disconnected'))
+ 
+ },[])
 
-  useEffect(() => {
-    axios.get(url).then((res) => {
-      setCoins(res.data);
-    });
-  }, [url]);
   return (
     <ThemeProvider>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home coins={coins} />} />
+        <Route path="/" element={<Home symboles={symboles} itemsPerPage={10} />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/coin/:coinId" element={<CoinPage />}>
-          <Route path=":coinId" />
-        </Route>
       </Routes>
       <Footer />
     </ThemeProvider>
